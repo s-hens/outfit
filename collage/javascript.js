@@ -18,6 +18,7 @@ image1.onload = function () {
         image: image1,
         width: 300,
         height: 450,
+        draggable: true, //allow drag & drop
     });
     layer.add(dress);
 };
@@ -31,6 +32,7 @@ image2.onload = function() {
         image: image2,
         width: 300,
         height: 300,
+        draggable: true,
     });
     layer.add(shirt);
 };
