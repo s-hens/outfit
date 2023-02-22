@@ -157,12 +157,51 @@ const selectResizeRotate = (() => {
     }
 });
 
-//delete button
+//delete
 document.getElementById("delete").addEventListener("click", removeImage);
 
-function removeImage(e) {
+function removeImage() {
     (tr.nodes()).forEach(node => node.destroy());
     tr.nodes([]);
+}
+
+//duplicate
+document.getElementById("duplicate").addEventListener("click", duplicateImage);
+
+function duplicateImage() {
+    (tr.nodes()).forEach(node => {
+    const image = new Image();
+    image.onload = function() {
+    let shirt = new Konva.Image({
+        x: 0,
+        y: 0,
+        image: image,
+        width: node.attrs.width,
+        height: node.attrs.height,
+        name: "fashion",
+        draggable: true,
+    });
+    layer.add(shirt);
+};
+image.src = `${node.attrs.image.currentSrc}`;
+    });
+}
+
+//move forward/backward
+document.getElementById("forward").addEventListener("click", moveForward);
+
+function moveForward() {
+    (tr.nodes()).forEach(node => {
+        node.zIndex(node.zIndex() + 1);
+    })
+}
+
+document.getElementById("backward").addEventListener("click", moveBackward);
+
+function moveBackward() {
+    (tr.nodes()).forEach(node => {
+        node.zIndex(node.zIndex() - 1);
+    })
 }
 
 })();

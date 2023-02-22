@@ -1,4 +1,5 @@
 body {
+    background-color: #bebebe;
     margin: 20px;
     padding: 0;
     display: grid;
@@ -20,6 +21,7 @@ div {
 }
 
 #canvas {
+    background-color: #FFFFFF;
     width: 800px;
     height: 800px;
 }
