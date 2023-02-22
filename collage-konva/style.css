@@ -1,10 +1,25 @@
 body {
     margin: 20px;
     padding: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+}
+
+div {
+    border: 1px solid black;
+}
+
+#controls {
+    grid-area: 1 / 1 / 2 / 3;
+}
+
+#images img {
+    height: 200px;
+    width: auto;
 }
 
 #canvas {
-    border: 1px solid black;
     width: 800px;
     height: 800px;
 }

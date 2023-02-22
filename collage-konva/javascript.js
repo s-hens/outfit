@@ -157,4 +157,12 @@ const selectResizeRotate = (() => {
     }
 });
 
+//delete button
+document.getElementById("delete").addEventListener("click", removeImage);
+
+function removeImage(e) {
+    (tr.nodes()).forEach(node => node.destroy());
+    tr.nodes([]);
+}
+
 })();
