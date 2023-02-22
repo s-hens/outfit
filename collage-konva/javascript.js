@@ -1,60 +1,34 @@
-//create new stage
+//------------------//
+// Create new stage //
+//------------------//
 const stage = new Konva.Stage({
     container: "canvas", //container: "id of container div"
     width: 800,
     height: 800,
-})
+});
 
-//create new layer and add it to stage
+//--------------------------------------//
+// Create new layer and add it to stage //
+//--------------------------------------//
 const layer = new Konva.Layer();
 stage.add(layer);
 
-/*
-//add images
-const image1 = new Image();
-image1.onload = function () {
-    let dress = new Konva.Image({
-        x: 0,
-        y: 0,
-        image: image1,
-        width: 300,
-        height: 450,
-        name: "fashion",
-        draggable: true, //allow drag & drop
-    });
-    layer.add(dress); //add to layer after it loads
-    //tr.nodes([dress]); //optional: add to transformer instance after it loads: this makes the image selected on load
-};
-image1.src = "./example1.jpg";
-
-const image2 = new Image();
-image2.onload = function() {
-    let shirt = new Konva.Image({
-        x: 300,
-        y: 0,
-        image: image2,
-        width: 300,
-        height: 300,
-        name: "fashion",
-        draggable: true,
-    });
-    layer.add(shirt);
-};
-image2.src = "./example2.jpg";
-*/
-
-// create transformer instance
+//--------------------//
+// Create transformer //
+//--------------------//
 let tr = new Konva.Transformer();
 layer.add(tr);
 
-//add images on konva on click
+//----------------------//
+// Add images to canvas //
+//----------------------//
 let images = document.querySelectorAll("img");
-images.forEach(image => image.addEventListener("click", addToKonva));
+images.forEach(image => image.addEventListener("click", addImage));
 
-function addToKonva() {
+function addImage() {
     const image = new Image();
     image.onload = function() {
-    let shirt = new Konva.Image({
+    let newImage = new Konva.Image({
         x: 0,
         y: 0,
         image: image,
@@ -63,22 +37,45 @@ function addToKonva() {
         name: "fashion",
         draggable: true,
     });
-    layer.add(shirt);
+    layer.add(newImage);
 };
 image.src = `${this.src}`;
 };
 
-//handle select, resize and rotate
-const selectResizeRotate = (() => {
 
-    //create selection rectangle
+
+// figuring out how to custom crop images
+const image1 = new Image();
+image1.onload = function () {
+    poly.fillPatternImage(image1)
+};
+image1.src = "./example1.jpg";
+
+var poly = new Konva.Line({
+    points: [23, 20, 23, 160, 70, 93, 150, 109, 290, 139, 270, 93],
+    fillPatternImage: images.image1,
+    closed: true,
+    name: "fashion",
+    draggable: true,
+  });
+layer.add(poly);
+
+
+
+//-----------------------------------------------------------//
+// Manipulate images on canvas:                              //
+// select, resize, rotate, delete, duplicate, change z-level //
+//-----------------------------------------------------------//
+const canvasActions = (() => {
+
+// Create selection rectangle
     let selectionRectangle = new Konva.Rect({
         fill: "rgba(0,0,255,0.25)",
         visible: false,
     });
     layer.add(selectionRectangle);
 
-    //how selection rectangle works
+// Functionality of selection rectangle
     let x1, y1, x2, y2;
     stage.on("mousedown touchstart", (e) => {
         if (e.target !== stage) {
@@ -126,82 +123,80 @@ const selectResizeRotate = (() => {
         tr.nodes(selected);
     });
 
-    // clicks select/deselect images
+// Click to select/deselect images
     stage.on("click tap dragstart", function (e) {
     if (selectionRectangle.visible()) {
-        return; // if we are selecting with rect, do nothing
+        return; //if we are selecting with rect, do nothing
     }
     if (e.target === stage) {
-        tr.nodes([]); // if click on empty area - remove all selections
+        tr.nodes([]); //if click on empty area, remove all selections
         return;
     }
     if (!e.target.hasName("fashion")) {
-        return; // do nothing if clicked NOT on our images
+        return; //do nothing if clicked NOT on our images
     }
 
-    // press shift or ctrl to select multiple images
+// Press shift or ctrl to select multiple images
     const metaPressed = e.evt.shiftKey || e.evt.ctrlKey || e.evt.metaKey;
     const isSelected = tr.nodes().indexOf(e.target) >= 0;
 
-    if (!metaPressed && !isSelected) {
-        tr.nodes([e.target]); //if no key pressed and the node is not selected, select just one
-    } else if (metaPressed && isSelected) {
-        //if we pressed keys and node was selected, remove it from selection
-        //use slice to have new copy of array, remove node from array
-        const nodes = tr.nodes().slice();
+    if (!metaPressed && !isSelected) { //if no key pressed and the node is not selected, select just one
+        tr.nodes([e.target]);
+    } else if (metaPressed && isSelected) { //if key pressed and node was already selected, remove it from selection
+        const nodes = tr.nodes().slice(); //use slice to have new copy of array, remove node from array
         nodes.splice(nodes.indexOf(e.target), 1);
         tr.nodes(nodes);
     } else if (metaPressed && !isSelected) {
-        const nodes = tr.nodes().concat([e.target]); //add the node into selection
+        const nodes = tr.nodes().concat([e.target]); //if key pressed and node was not already selected, add the node into selection
         tr.nodes(nodes);
     }
-});
-
-//delete
-document.getElementById("delete").addEventListener("click", removeImage);
-
-function removeImage() {
-    (tr.nodes()).forEach(node => node.destroy());
-    tr.nodes([]);
-}
-
-//duplicate
-document.getElementById("duplicate").addEventListener("click", duplicateImage);
-
-function duplicateImage() {
-    (tr.nodes()).forEach(node => {
-    const image = new Image();
-    image.onload = function() {
-    let shirt = new Konva.Image({
-        x: 0,
-        y: 0,
-        image: image,
-        width: node.attrs.width,
-        height: node.attrs.height,
-        name: "fashion",
-        draggable: true,
     });
-    layer.add(shirt);
-};
-image.src = `${node.attrs.image.currentSrc}`;
+
+// Delete image(s)
+    document.getElementById("delete").addEventListener("click", removeImage);
+
+    function removeImage() {
+        (tr.nodes()).forEach(node => node.destroy());
+        tr.nodes([]);
+    }
+
+// Duplicate image(s)
+    document.getElementById("duplicate").addEventListener("click", duplicateImage);
+
+    function duplicateImage() {
+        (tr.nodes()).forEach(node => {
+        const image = new Image();
+        image.onload = function() {
+        let newImage = new Konva.Image({
+            x: 0,
+            y: 0,
+            image: image,
+            width: node.attrs.width,
+            height: node.attrs.height,
+            name: "fashion",
+            draggable: true,
+        });
+        layer.add(newImage);
+        };
+    image.src = `${node.attrs.image.currentSrc}`;
     });
-}
+    };
 
-//move forward/backward
-document.getElementById("forward").addEventListener("click", moveForward);
+// Change z-level
+    document.getElementById("forward").addEventListener("click", moveForward);
 
-function moveForward() {
-    (tr.nodes()).forEach(node => {
-        node.zIndex(node.zIndex() + 1);
-    })
-}
+    function moveForward() {
+        (tr.nodes()).forEach(node => {
+            node.zIndex(node.zIndex() + 1);
+        })
+    };
 
-document.getElementById("backward").addEventListener("click", moveBackward);
+    document.getElementById("backward").addEventListener("click", moveBackward);
 
-function moveBackward() {
-    (tr.nodes()).forEach(node => {
-        node.zIndex(node.zIndex() - 1);
-    })
-}
+    function moveBackward() {
+        (tr.nodes()).forEach(node => {
+            node.zIndex(node.zIndex() - 1);
+        })
+    };
 
 })();
