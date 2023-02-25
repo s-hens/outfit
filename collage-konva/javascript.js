@@ -16,7 +16,12 @@ stage.add(layer);
 //--------------------//
 // Create transformer //
 //--------------------//
-let tr = new Konva.Transformer();
+let tr = new Konva.Transformer({
+    anchorStroke: "#77d0ee",
+    borderStroke: "#77d0ee",
+    borderStrokeWidth: "2",
+    anchorStrokeWidth: "2",
+});
 layer.add(tr);
 
 //----------------------//
