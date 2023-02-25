@@ -17,8 +17,8 @@ stage.add(layer);
 // Create transformer //
 //--------------------//
 let tr = new Konva.Transformer({
-    anchorStroke: "#77d0ee",
-    borderStroke: "#77d0ee",
+    anchorStroke: "rgba(119, 208, 238, 1)",
+    borderStroke: "rgba(119, 208, 238, 1)",
     borderStrokeWidth: "2",
     anchorStrokeWidth: "2",
 });
@@ -55,7 +55,7 @@ const canvasActions = (() => {
 
 // Create selection rectangle
     let selectionRectangle = new Konva.Rect({
-        fill: "rgba(0,0,255,0.25)",
+        fill: "rgba(119, 208, 238, 0.5)",
         visible: false,
     });
     layer.add(selectionRectangle);
