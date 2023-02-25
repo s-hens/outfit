@@ -31,21 +31,25 @@ let images = document.querySelectorAll("img");
 images.forEach(image => image.addEventListener("click", addImage));
 
 function addImage() {
-    const image = new Image();
-    image.onload = function() {
-    let newImage = new Konva.Image({
-        x: 0,
-        y: 0,
-        image: image,
-        width: this.width,
-        height: this.height,
-        name: "fashion",
-        draggable: true,
-    });
-    layer.add(newImage);
+
+const image = new Image();
+image.onload = function () {
+    poly.fillPatternImage(image)
 };
 image.src = `${this.src}`;
-};
+
+var poly = new Konva.Line({
+    points: [0, 0,
+             this.naturalWidth, 0,
+             this.naturalWidth, this.naturalHeight,
+             0, this.naturalHeight],
+    fillPatternImage: images.image,
+    closed: true,
+    name: "fashion",
+    draggable: true,
+  });
+layer.add(poly);
+}
 
 //-----------------------------------------------------------//
 // Manipulate images on canvas:                              //
@@ -153,21 +157,33 @@ const canvasActions = (() => {
 
     function duplicateImage() {
         (tr.nodes()).forEach(node => {
-        const image = new Image();
-        image.onload = function() {
-        let newImage = new Konva.Image({
-            x: 0,
-            y: 0,
-            image: image,
-            width: node.attrs.width,
-            height: node.attrs.height,
-            name: "fashion",
-            draggable: true,
+
+            let newX, newY
+            if (node._lastPos !== null) {
+                newX = node._lastPos.x + 20;
+                newY = node._lastPos.y + 20;
+            } else {
+                newX = 20;
+                newY = 20;
+            }
+
+            const image = new Image();
+            image.onload = function () {
+                poly.fillPatternImage(image)
+            };
+            image.src = `${node.attrs.fillPatternImage.currentSrc}`;
+                
+            var poly = new Konva.Line({
+                x: newX,
+                y: newY,
+                points: node.attrs.points,
+                fillPatternImage: images.image,
+                closed: true,
+                name: "fashion",
+                draggable: true,
+            });
+            layer.add(poly);
         });
-        layer.add(newImage);
-        };
-    image.src = `${node.attrs.image.currentSrc}`;
-    });
     };
 
 // Change z-level
@@ -191,20 +207,21 @@ const canvasActions = (() => {
 })();
 
 // figuring out how to custom crop images
+
 const image1 = new Image();
 image1.onload = function () {
-    poly.fillPatternImage(image1)
+    poly2.fillPatternImage(image1)
 };
 image1.src = "./example1.jpg";
 
-var poly = new Konva.Line({
+var poly2 = new Konva.Line({
     points: [23, 20, 23, 160, 70, 93, 150, 109, 290, 139, 270, 93],
     fillPatternImage: images.image1,
     closed: true,
     name: "fashion",
     draggable: true,
   });
-layer.add(poly);
+layer.add(poly2);
 
 document.getElementById("crop").addEventListener("click", cropImage);
 
