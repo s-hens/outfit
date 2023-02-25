@@ -42,26 +42,6 @@ function addImage() {
 image.src = `${this.src}`;
 };
 
-
-
-// figuring out how to custom crop images
-const image1 = new Image();
-image1.onload = function () {
-    poly.fillPatternImage(image1)
-};
-image1.src = "./example1.jpg";
-
-var poly = new Konva.Line({
-    points: [23, 20, 23, 160, 70, 93, 150, 109, 290, 139, 270, 93],
-    fillPatternImage: images.image1,
-    closed: true,
-    name: "fashion",
-    draggable: true,
-  });
-layer.add(poly);
-
-
-
 //-----------------------------------------------------------//
 // Manipulate images on canvas:                              //
 // select, resize, rotate, delete, duplicate, change z-level //
@@ -88,6 +68,7 @@ const canvasActions = (() => {
         y2 = stage.getPointerPosition().y;
 
         selectionRectangle.visible(true);
+        selectionRectangle.moveToTop();
         selectionRectangle.width(0);
         selectionRectangle.height(0);
     });
@@ -121,6 +102,7 @@ const canvasActions = (() => {
             Konva.Util.haveIntersection(box, shape.getClientRect())
         );
         tr.nodes(selected);
+        tr.moveToTop();
     });
 
 // Click to select/deselect images
@@ -150,6 +132,7 @@ const canvasActions = (() => {
         const nodes = tr.nodes().concat([e.target]); //if key pressed and node was not already selected, add the node into selection
         tr.nodes(nodes);
     }
+    tr.moveToTop();
     });
 
 // Delete image(s)
@@ -184,19 +167,45 @@ const canvasActions = (() => {
 
 // Change z-level
     document.getElementById("forward").addEventListener("click", moveForward);
+    document.getElementById("backward").addEventListener("click", moveBackward);
 
     function moveForward() {
         (tr.nodes()).forEach(node => {
             node.zIndex(node.zIndex() + 1);
         })
     };
-
-    document.getElementById("backward").addEventListener("click", moveBackward);
-
     function moveBackward() {
         (tr.nodes()).forEach(node => {
             node.zIndex(node.zIndex() - 1);
         })
     };
 
+// Crop
+
+
 })();
+
+// figuring out how to custom crop images
+const image1 = new Image();
+image1.onload = function () {
+    poly.fillPatternImage(image1)
+};
+image1.src = "./example1.jpg";
+
+var poly = new Konva.Line({
+    points: [23, 20, 23, 160, 70, 93, 150, 109, 290, 139, 270, 93],
+    fillPatternImage: images.image1,
+    closed: true,
+    name: "fashion",
+    draggable: true,
+  });
+layer.add(poly);
+
+document.getElementById("crop").addEventListener("click", cropImage);
+
+function cropImage() {
+    if (tr.nodes().length !== 1) {
+        return; //only work if 1 item is selected at a time
+    }
+    console.log(tr.nodes().length);
+}
